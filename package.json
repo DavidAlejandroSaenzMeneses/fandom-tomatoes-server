@@ -1,0 +1,26 @@
+{
+  "name": "fandom-tomatoes-server",
+  "version": "1.0.0",
+  "description": "Servidor APIRest de app de reseña de peliculas, utiliza Node.js, Express.ja, Mongoose, MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidAlejandroSaenzMeneses/fandom-tomatoes-server.git"
+  },
+  "author": "David Saenz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DavidAlejandroSaenzMeneses/fandom-tomatoes-server/issues"
+  },
+  "homepage": "https://github.com/DavidAlejandroSaenzMeneses/fandom-tomatoes-server#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "mongoose": "^6.2.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13"
+  }
+}

@@ -27,9 +27,7 @@ export interface IMovie extends mongoose.Document {
 
 const MovieSchema = new mongoose.Schema<IMovie>(
     {
-        _id: {
-            type: mongoose.Schema.Types.ObjectId
-        },
+
         title: {
             type: String,
             require: true
@@ -51,8 +49,7 @@ const MovieSchema = new mongoose.Schema<IMovie>(
             required: true
         },
         platforms: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Platforms'
+            type: Array
         },
         score: {
             type: Number,

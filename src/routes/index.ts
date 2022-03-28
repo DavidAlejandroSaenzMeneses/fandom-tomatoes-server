@@ -23,6 +23,8 @@ class MyRouterClass {
 
         //movie endpoints
         this.router.post('/movies', upload.single('file'), movie.create);
+        this.router.get('/movies/:id', upload.single('file'), movie.readOne);
+        this.router.get('/movies', upload.single('file'), movie.readAll);
     }
 }
 

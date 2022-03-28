@@ -1,18 +1,30 @@
-import {Router} from 'express';
-import {login} from '../controllers/login.controller';
-import {platform} from '../controllers/platform.controller';
+import { Router } from 'express';
+import { uploadMiddleware } from '../middlewares/upload';
+//import {login} from '../controllers/login.controller';
+import { platform } from '../controllers/platform.controller';
+import { movie } from '../controllers/movie.controller';
 
-class MyRouterClass{
+
+const upload = uploadMiddleware;
+
+class MyRouterClass {
     router: Router;
-    constructor(){
+    constructor() {
         this.router = Router();
-        this.routes(); 
+        this.routes();
     }
-    routes(){
-        this.router.post('/login',login.validate);
-        
-        this.router.post('/platforms',platform.create);
-        this.router.get('/platforms/:id?',platform.read);
+    routes() {
+        //this.router.post('/login',login.validate);
+
+        //platform endpoints
+        this.router.post('/platforms', upload.single('file'), platform.create);
+        this.router.get('/platforms/:id', platform.readOne);
+        this.router.get('/platforms', platform.readAll);
+
+        //movie endpoints
+        this.router.post('/movies', upload.single('file'), movie.create);
+        this.router.get('/movies/:id', upload.single('file'), movie.readOne);
+        this.router.get('/movies', upload.single('file'), movie.readAll);
     }
 }
 

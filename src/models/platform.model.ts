@@ -10,8 +10,8 @@ import mongoose from 'mongoose';
 
 export interface IPlatform extends mongoose.Document {
     id?: string;
-    icon?: string;//url
-    title: string;
+    icon?: string;
+    title?: string;
     createAt?: Date;
     updatedAt?: Date;
 }

@@ -10,23 +10,24 @@
   updatedAt <Datetime>, // Fecha de última actualización de la película.
     reviews <Review[]> // Array que contiene todas las reseñas de la película separadas por plataforma..
 }*/
-import mongoose from 'mongoose';
-import { Platform } from './platform.model';
-interface Film extends mongoose.Document {
-    id: string;
+import mongoose, { ObjectId } from 'mongoose';
+export interface IMovie extends mongoose.Document {
+    _id?: ObjectId;
     title: string;
     slug: string;
     image?: string;//url
     director: string;
-    platforms: Platform[];
+    synopsis: string;
+    platforms: ObjectId;
     score: number;
     createAt: Date;
     updateAt: Date;
-    reviews: string[];
+    reviews?: string[];
 }
 
-const UserSchema = new mongoose.Schema<Film>(
+const MovieSchema = new mongoose.Schema<IMovie>(
     {
+
         title: {
             type: String,
             require: true
@@ -43,27 +44,27 @@ const UserSchema = new mongoose.Schema<Film>(
             type: String,
             required: true
         },
-        platforms:{
-            type: [String],
+        synopsis: {
+            type: String,
             required: true
         },
-        score:{
-            type:Number,
-            default:0
+        platforms: {
+            type: Array
+        },
+        score: {
+            type: Number,
+            default: 0
         },
         createAt: {
-            type: Date, 
+            type: Date,
             default: Date.now
         },
         updateAt: {
-            type: Date, 
+            type: Date,
             default: Date.now
-        },
-        reviews:{
-            type: [[String]]
         }
     },
     { timestamps: true }
 );
 
-module.exports = mongoose.model<Film>('User', UserSchema);
+export default mongoose.model<IMovie>('Movie', MovieSchema);

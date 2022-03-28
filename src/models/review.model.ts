@@ -10,7 +10,7 @@
   updatedAt <Datetime>, // Fecha de actualización de la reseña.
 }*/
 import mongoose from 'mongoose';
-import { Platform } from './platform.model';
+//import { Platform } from './platform.model';
 
 export interface Review extends mongoose.Document {
     id: string;

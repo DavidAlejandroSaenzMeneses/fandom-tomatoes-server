@@ -21,3 +21,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+#uploads
+/src/assets/image/uploads
+/src/assets/image/optimize
+
+#build
+/build/

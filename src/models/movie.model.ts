@@ -54,14 +54,6 @@ const MovieSchema = new mongoose.Schema<IMovie>(
         score: {
             type: Number,
             default: 0
-        },
-        createAt: {
-            type: Date,
-            default: Date.now
-        },
-        updateAt: {
-            type: Date,
-            default: Date.now
         }
     },
     { timestamps: true }

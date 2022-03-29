@@ -18,7 +18,7 @@ class PlatformController {
 
     public async readOne(req: Request, res: Response) {
         const { id } = req.params;
-        if (id == '' && id == undefined) {
+        if (id == '' || id == undefined || id == null) {
             return res.status(400).send({ status: 'error', message: 'incomplete data' });
         }
         try {

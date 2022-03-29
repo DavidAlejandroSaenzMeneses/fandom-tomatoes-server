@@ -15,14 +15,12 @@ export interface IMovie extends mongoose.Document {
     _id?: ObjectId;
     title: string;
     slug: string;
-    image?: string;//url
+    image?: string | null;
     director: string;
     synopsis: string;
-    platforms: ObjectId;
-    score: number;
-    createAt: Date;
-    updateAt: Date;
-    reviews?: string[];
+    platforms: string[] | null;
+    score?: number;
+    reviews?: string[] | null;
 }
 
 const MovieSchema = new mongoose.Schema<IMovie>(

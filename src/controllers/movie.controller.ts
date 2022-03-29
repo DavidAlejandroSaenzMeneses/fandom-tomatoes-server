@@ -23,7 +23,7 @@ class MovieController {
 
     public async readOne(req: Request, res: Response) {
         const { id } = req.params;
-        if (id == '' && id == undefined) {
+        if (id == '' || id == undefined || id == null) {
             return res.status(400).send({ status: 'error', message: 'incomplete data' });
         }
         try {
@@ -54,12 +54,41 @@ class MovieController {
         }
     }
 
-    public async update() {
-        throw new Error('Method not implemented');
+    public async update(req: Request, res: Response) {
+        const { id } = req.params;
+        const { title, slug, director, synopsis, platforms } = req.body;
+        if (id == undefined || typeof title !== 'string' || typeof slug !== 'string' || typeof director !== 'string' || typeof synopsis !== 'string') {
+            return res.status(201).send({ status: 'success', message: 'incomplete data' });
+        }
+        try {
+            const resizedImage = await resizeImage(req.file?.path, req.file?.filename, 240, 360);
+            const platformsVerified = typeof platforms === 'string' ? stringToArray(platforms) : platforms;
+            const dataFromUpdate = { title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformsVerified };
+            const movieUpdated = await MovieModel.findOneAndUpdate({ _id: id }, dataFromUpdate, { new: true});
+            if(!movieUpdated){
+                return res.status(404).send({ status: 'error', message: 'resource not found' }); 
+            }
+            return res.status(201).send({ status: 'success', movieUpdated });
+        } catch (error) {
+            return res.status(500).send({ status: 'error', message: 'sorry something went wrong please try again later', error });
+        }
     }
 
-    public async delete() {
-        throw new Error('Method not implemented');
+    public async delete(req: Request, res: Response) {
+        const { id } = req.params;
+        if (id == '' || id == undefined || id == null) {
+            console.log('::' + req.params);
+            return res.status(400).send({ status: 'error', message: 'incomplete data' });
+        }
+        try {
+            const deletedElements = await MovieModel.findOneAndDelete({ _id: id });
+            if (!deletedElements) {
+                return res.status(404).send({ status: 'error', message: 'resource not found' });
+            }
+            return res.status(200).send({ status: 'success', message: 'successfully deleted items' });
+        } catch (error) {
+            return res.status(500).send({ status: 'error', message: 'sorry something went wrong please try again later', error });
+        }
     }
 }
 

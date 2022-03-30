@@ -3,6 +3,7 @@ import { uploadMiddleware } from '../middlewares/upload';
 //import {login} from '../controllers/login.controller';
 import { platform } from '../controllers/platform.controller';
 import { movie } from '../controllers/movie.controller';
+import { review } from '../controllers/review.controller';
 
 
 const upload = uploadMiddleware;
@@ -27,6 +28,9 @@ class MyRouterClass {
         this.router.get('/movies', movie.readAll);
         this.router.put('/movies/:id', upload.single('file'), movie.update);
         this.router.delete('/movies/:id', movie.delete);
+
+        //reviews endpoints
+        this.router.post('/reviews/', review.create);
     }
 }
 

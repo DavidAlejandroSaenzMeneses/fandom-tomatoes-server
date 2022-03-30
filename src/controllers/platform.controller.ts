@@ -5,7 +5,7 @@ import { resizeImage } from '../helpers/resizeImage';
 class PlatformController {
     public async create(req: Request, res: Response) {
         const title: string = req.body.title;
-        if (!(title.length > 0)) { return res.status(400).send({ status: 'error', message: 'incomplete data' }); }
+        if (title == '') { return res.status(400).send({ status: 'error', message: 'incomplete data' }); }
         try {
             const resizedImage = await resizeImage(req.file?.path, req.file?.filename, 48);
             const newPlatform: IPlatform = new PlatformModel({ icon: resizedImage ?? null, title: title });
@@ -18,7 +18,7 @@ class PlatformController {
 
     public async readOne(req: Request, res: Response) {
         const { id } = req.params;
-        if (id == '' && id == undefined) {
+        if (id == '' || id == undefined || id == null) {
             return res.status(400).send({ status: 'error', message: 'incomplete data' });
         }
         try {

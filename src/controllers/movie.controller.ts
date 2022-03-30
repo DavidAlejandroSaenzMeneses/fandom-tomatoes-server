@@ -2,12 +2,13 @@ import { Request, Response } from 'express';
 import MovieModel, { IMovie } from '../models/movie.model';
 import { resizeImage } from '../helpers/resizeImage';
 import { stringToArray } from '../helpers/formatStringToArray';
+import { review } from '../controllers/review.controller';
 
 class MovieController {
     public async create(req: Request, res: Response) {
         const { title, slug, director, synopsis, platforms } = req.body;
-        if (typeof title !== 'string' || typeof slug !== 'string' || typeof director !== 'string' || typeof synopsis !== 'string' || (platforms && !(platforms.length > 0))) {
-            return res.status(201).send({ status: 'success', message: 'incomplete data' });
+        if (title == '' || slug == '' || director == '' || synopsis == '' || (platforms && !(platforms.length > 0))) {
+            return res.status(400).send({ status: 'success', message: 'incomplete data' });
         }
 
         try {
@@ -31,7 +32,8 @@ class MovieController {
             if (!movieData) {
                 return res.status(404).send({ status: 'error', message: 'resource not found' });
             }
-            return res.status(200).send({ status: 'success', movieData });
+            const reviewsData = await review.getAllByMovie(id);
+            return res.status(200).send({ status: 'success', movieData, reviewsData });
         } catch (error) {
             return res.status(500).send({ error });
         }
@@ -57,16 +59,16 @@ class MovieController {
     public async update(req: Request, res: Response) {
         const { id } = req.params;
         const { title, slug, director, synopsis, platforms } = req.body;
-        if (id == undefined || typeof title !== 'string' || typeof slug !== 'string' || typeof director !== 'string' || typeof synopsis !== 'string') {
+        if (id == undefined || title == '' || slug == '' || director == '' || synopsis == '') {
             return res.status(201).send({ status: 'success', message: 'incomplete data' });
         }
         try {
             const resizedImage = await resizeImage(req.file?.path, req.file?.filename, 240, 360);
             const platformsVerified = typeof platforms === 'string' ? stringToArray(platforms) : platforms;
             const dataFromUpdate = { title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformsVerified };
-            const movieUpdated = await MovieModel.findOneAndUpdate({ _id: id }, dataFromUpdate, { new: true});
-            if(!movieUpdated){
-                return res.status(404).send({ status: 'error', message: 'resource not found' }); 
+            const movieUpdated = await MovieModel.findOneAndUpdate({ _id: id }, dataFromUpdate, { new: true });
+            if (!movieUpdated) {
+                return res.status(404).send({ status: 'error', message: 'resource not found' });
             }
             return res.status(201).send({ status: 'success', movieUpdated });
         } catch (error) {

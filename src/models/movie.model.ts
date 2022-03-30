@@ -22,7 +22,7 @@ export interface IMovie extends mongoose.Document {
     score?: number;
     reviews?: string[] | null;
 }
-
+    
 const MovieSchema = new mongoose.Schema<IMovie>(
     {
 

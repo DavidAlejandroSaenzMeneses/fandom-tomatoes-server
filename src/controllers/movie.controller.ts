@@ -15,10 +15,8 @@ class MovieController {
         try {
 
             const resizedImage = await resizeImage(req.file?.path, req.file?.filename, 240, 360);
-            const platformsVerified: Types.ObjectId[] | null = typeof platforms == 'string'
-                ? formatToObjectId.fromString(platforms)
-                : formatToObjectId.fromArray(platforms);
-            if (!platformsVerified) { return res.status(400).send({ status: 'success', message: 'incomplete data' }); }
+            const platformsVerified: Types.ObjectId[] | null = formatToObjectId.fromArray(platforms);
+            if (!platformsVerified || platformsVerified.length == 0) { return res.status(400).send({ status: 'error', message: 'platform format error' }); }
             const newMovie: IMovie = new MovieModel({ title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformsVerified });
             newMovie.save();
             return res.status(201).send({ status: 'success', newMovie });
@@ -79,10 +77,8 @@ class MovieController {
         }
         try {
             const resizedImage = await resizeImage(req.file?.path, req.file?.filename, 240, 360);
-            const platformsVerified: Types.ObjectId[] | null = typeof platforms == 'string'
-                ? formatToObjectId.fromString(platforms)
-                : formatToObjectId.fromArray(platforms);
-            if (!platformsVerified) { return res.status(400).send({ status: 'error', message: 'incomplete data' }); }
+            const platformsVerified: Types.ObjectId[] | null = formatToObjectId.fromArray(platforms);
+            if (platformsVerified == null || platformsVerified.length == 0) { return res.status(400).send({ status: 'error', message: 'platform format error' }); }
             const movieUpdated = await MovieModel.findOneAndUpdate({ _id: id }, { title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformsVerified }, { new: true });
             if (!movieUpdated) {
                 return res.status(404).send({ status: 'error', message: 'resource not found' });

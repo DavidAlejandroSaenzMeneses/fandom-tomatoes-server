@@ -3,7 +3,7 @@ import { IPlatform } from './platform.model';
 
 export interface IReview extends mongoose.Document {
     id?: ObjectId;
-    movie: string;
+    movie: ObjectId;
     platform: IPlatform;
     author: string;
     body: string;
@@ -11,19 +11,19 @@ export interface IReview extends mongoose.Document {
 }
 
 export interface IListReview {
-    platform: IPlatform;
+    platform: IPlatform['title'];
     reviews: IReview[];
 }
 
 const ReviewSchema = new mongoose.Schema<IReview>(
     {
         movie: {
-            type: String,
-            required: true
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Movie'
         },
         platform: {
-            type: String,
-            required: true
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Platform'
         },
         author: {
             type: String,

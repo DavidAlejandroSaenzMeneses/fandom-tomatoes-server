@@ -1,22 +1,28 @@
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
 import MovieModel, { IMovie } from '../models/movie.model';
 import { resizeImage } from '../helpers/resizeImage';
-import { stringToArray } from '../helpers/formatStringToArray';
+import { formatToObjectId } from '../helpers/formatToObjectId';
 import { review } from '../controllers/review.controller';
 
 class MovieController {
     public async create(req: Request, res: Response) {
         const { title, slug, director, synopsis, platforms } = req.body;
-        if (title == '' || slug == '' || director == '' || synopsis == '' || (platforms && !(platforms.length > 0))) {
+        if (title == '' || slug == '' || director == '' || synopsis == '') {
             return res.status(400).send({ status: 'success', message: 'incomplete data' });
         }
 
         try {
+
             const resizedImage = await resizeImage(req.file?.path, req.file?.filename, 240, 360);
-            const platformsVerified = typeof platforms === 'string' ? stringToArray(platforms) : platforms;
+            const platformsVerified: Types.ObjectId[] | null = typeof platforms == 'string'
+                ? formatToObjectId.fromString(platforms)
+                : formatToObjectId.fromArray(platforms);
+            if (!platformsVerified) { return res.status(400).send({ status: 'success', message: 'incomplete data' }); }
             const newMovie: IMovie = new MovieModel({ title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformsVerified });
-            newMovie.save(error => { if (error) throw error; });
+            newMovie.save();
             return res.status(201).send({ status: 'success', newMovie });
+
         } catch (error) {
             return res.status(500).send({ error });
         }
@@ -28,14 +34,14 @@ class MovieController {
             return res.status(400).send({ status: 'error', message: 'incomplete data' });
         }
         try {
-            const movieData: IMovie | null = await MovieModel.findOne({ _id: id });
+            const movieData: IMovie | null = await MovieModel.findOne({ _id: id }).populate('platforms');
             if (!movieData) {
                 return res.status(404).send({ status: 'error', message: 'resource not found' });
             }
             const reviewsData = await review.getAllByMovie(id);
             return res.status(200).send({ status: 'success', movieData, reviewsData });
         } catch (error) {
-            return res.status(500).send({ error });
+            return res.status(500).send({ status: 'error', message: 'sorry something went wrong please try again later', error });
         }
     }
 
@@ -47,26 +53,37 @@ class MovieController {
                 .limit(limit * 1)
                 .skip((page - 1) * limit)
                 .exec();
-            if (!movieData) {
+            if (!movieData || movieData == undefined) {
                 return res.status(404).send({ status: 'error', message: 'resource not found' });
             }
-            return res.status(200).send({ status: 'success', movieData });
+            const moviesWithScore = await Promise.all(
+                movieData.map(async (movie) => {
+                    if (movie._id) {
+                        const total = await review.getOverallScoreMovie(movie._id);
+                        movie.score = total;
+                    }
+                    return movie;
+                })
+            );
+            return res.status(200).send({ status: 'success', moviesWithScore });
         } catch (error) {
-            return res.status(500).send({ error });
+            return res.status(500).send({ status: 'error', message: 'sorry something went wrong please try again later', error });
         }
     }
 
     public async update(req: Request, res: Response) {
         const { id } = req.params;
         const { title, slug, director, synopsis, platforms } = req.body;
-        if (id == undefined || title == '' || slug == '' || director == '' || synopsis == '') {
-            return res.status(201).send({ status: 'success', message: 'incomplete data' });
+        if (title == '' || slug == '' || director == '' || synopsis == '') {
+            return res.status(400).send({ status: 'error', message: 'incomplete data' });
         }
         try {
             const resizedImage = await resizeImage(req.file?.path, req.file?.filename, 240, 360);
-            const platformsVerified = typeof platforms === 'string' ? stringToArray(platforms) : platforms;
-            const dataFromUpdate = { title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformsVerified };
-            const movieUpdated = await MovieModel.findOneAndUpdate({ _id: id }, dataFromUpdate, { new: true });
+            const platformsVerified: Types.ObjectId[] | null = typeof platforms == 'string'
+                ? formatToObjectId.fromString(platforms)
+                : formatToObjectId.fromArray(platforms);
+            if (!platformsVerified) { return res.status(400).send({ status: 'error', message: 'incomplete data' }); }
+            const movieUpdated = await MovieModel.findOneAndUpdate({ _id: id }, { title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformsVerified }, { new: true });
             if (!movieUpdated) {
                 return res.status(404).send({ status: 'error', message: 'resource not found' });
             }
@@ -79,7 +96,6 @@ class MovieController {
     public async delete(req: Request, res: Response) {
         const { id } = req.params;
         if (id == '' || id == undefined || id == null) {
-            console.log('::' + req.params);
             return res.status(400).send({ status: 'error', message: 'incomplete data' });
         }
         try {

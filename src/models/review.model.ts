@@ -10,7 +10,7 @@ export interface IReview extends mongoose.Document {
     score: number;
 }
 
-export interface listReview {
+export interface IListReview {
     platform: IPlatform;
     reviews: IReview[];
 }

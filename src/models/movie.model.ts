@@ -11,6 +11,7 @@
     reviews <Review[]> // Array que contiene todas las reseñas de la película separadas por plataforma..
 }*/
 import mongoose, { ObjectId } from 'mongoose';
+import { IPlatform } from './platform.model';
 export interface IMovie extends mongoose.Document {
     _id?: ObjectId;
     title: string;
@@ -18,11 +19,11 @@ export interface IMovie extends mongoose.Document {
     image?: string | null;
     director: string;
     synopsis: string;
-    platforms: string[] | null;
+    platforms: IPlatform[] | null;
     score?: number;
     reviews?: string[] | null;
 }
-    
+
 const MovieSchema = new mongoose.Schema<IMovie>(
     {
 
@@ -46,9 +47,15 @@ const MovieSchema = new mongoose.Schema<IMovie>(
             type: String,
             required: true
         },
-        platforms: {
+        /*platforms: {
             type: Array
-        },
+        },*/
+        platforms: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Platform'
+            }
+        ],
         score: {
             type: Number,
             default: 0

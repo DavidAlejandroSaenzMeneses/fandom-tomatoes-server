@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import ReviewModel, { listReview } from '../models/review.model';
+import { ObjectId } from 'mongoose';
+import ReviewModel, { IListReview } from '../models/review.model';
 
 class ReviewController {
     public async create(req: Request, res: Response) {
@@ -17,12 +18,12 @@ class ReviewController {
         }
     }
 
-    public async getAllByMovie(movie: string) {
+    public async getAllByMovie(movie: string): Promise<IListReview[]> {
         //Descripcion: getAllByMovie recibe un id de pelicula, consulta sus reviews y genera un arreglo de objetos con una plataforma y un arreglo de sus correspondientes reviews
         const reviews = await ReviewModel.find({ movie });
-        if (!reviews) { return false; }
+        if (!reviews) { return []; }
         //arreglo donde se cargaran los objetos ordenados para posteriormente ser retornados
-        const reviewsOrderByPlatform: listReview[] = [];
+        const reviewsOrderByPlatform: IListReview[] = [];
         reviews.map((review) => {
             //valida si la plataforma ya fue cargada al arreglo de reviews ordenado
             const platformAlreadyOrdered = reviewsOrderByPlatform.filter(data => data.platform == review.platform);
@@ -39,10 +40,14 @@ class ReviewController {
         return reviewsOrderByPlatform;
     }
 
-    public async getOverallScoreMovie(movie: string): Promise<number> {
+    public async getOverallScoreMovie(movie: ObjectId | string): Promise<number> {
         const reviews = await ReviewModel.find({ movie });
-        if (!reviews) { return 0; }
-        return reviews.map(review=>review.score).reduce((overwallScore,score)=>overwallScore+=score);
+        if (!(reviews.length > 0)) { return 0; }
+        try {
+            return reviews.map(review => review.score).reduce((overwallScore, score) => overwallScore += score) / reviews.length;
+        } catch {
+            return 0;
+        }
     }
 
 }

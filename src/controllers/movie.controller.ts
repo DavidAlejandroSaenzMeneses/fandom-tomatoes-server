@@ -15,9 +15,9 @@ class MovieController {
         try {
 
             const resizedImage = await resizeImage(req.file?.path, req.file?.filename, 240, 360);
-            const platformsVerified: Types.ObjectId[] | null = formatToObjectId.fromArray(platforms);
-            if (!platformsVerified || platformsVerified.length == 0) { return res.status(400).send({ status: 'error', message: 'platform format error' }); }
-            const newMovie: IMovie = new MovieModel({ title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformsVerified });
+            const platformObjectId: Types.ObjectId[] | null = formatToObjectId.fromArray(platforms);
+            if (!platformObjectId || platformObjectId.length == 0) { return res.status(400).send({ status: 'error', message: 'platform format error' }); }
+            const newMovie: IMovie = new MovieModel({ title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformObjectId });
             newMovie.save();
             return res.status(201).send({ status: 'success', newMovie });
 
@@ -63,7 +63,7 @@ class MovieController {
                     return movie;
                 })
             );
-            return res.status(200).send({ status: 'success', moviesWithScore });
+            return res.status(200).send({ status: 'success', moviesWithScore, page, limit });
         } catch (error) {
             return res.status(500).send({ status: 'error', message: 'sorry something went wrong please try again later', error });
         }
@@ -77,9 +77,9 @@ class MovieController {
         }
         try {
             const resizedImage = await resizeImage(req.file?.path, req.file?.filename, 240, 360);
-            const platformsVerified: Types.ObjectId[] | null = formatToObjectId.fromArray(platforms);
-            if (platformsVerified == null || platformsVerified.length == 0) { return res.status(400).send({ status: 'error', message: 'platform format error' }); }
-            const movieUpdated = await MovieModel.findOneAndUpdate({ _id: id }, { title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformsVerified }, { new: true });
+            const platformObjectId: Types.ObjectId[] | null = formatToObjectId.fromArray(platforms);
+            if (platformObjectId == null || platformObjectId.length == 0) { return res.status(400).send({ status: 'error', message: 'platform format error' }); }
+            const movieUpdated = await MovieModel.findOneAndUpdate({ _id: id }, { title, slug, image: resizedImage ?? null, director, synopsis, platforms: platformObjectId }, { new: true });
             if (!movieUpdated) {
                 return res.status(404).send({ status: 'error', message: 'resource not found' });
             }
@@ -103,6 +103,24 @@ class MovieController {
         } catch (error) {
             return res.status(500).send({ status: 'error', message: 'sorry something went wrong please try again later', error });
         }
+    }
+
+    public async clone(req: Request, res: Response) {
+        const { id } = req.params;
+        if (!id || id.length == 0) { return res.status(400).send({ status: 'error', message: 'incomplete data' }); }
+        try {
+            const movieBase = await MovieModel.findOne({ _id: id }) as unknown as IMovie;
+            if (!movieBase) {
+                return res.status(404).send({ status: 'error', message: 'resource not found' });
+            }
+            const dataClone = { title: movieBase.title, slug: movieBase.slug, image: movieBase.image, director: movieBase.director, synopsis: movieBase.synopsis, platforms: movieBase.platforms };
+            const movieClone = new MovieModel(dataClone);
+            movieClone.save();
+            return res.status(201).send({ status: 'success', movieClone });
+        } catch (error) {
+            return res.status(500).send({ status: 'error', message: 'sorry something went wrong please try again later', error });
+        }
+
     }
 }
 

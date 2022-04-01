@@ -22,7 +22,7 @@ class Server {
     }
     start(): void {
         this.app.listen(this.app.get('port'), () => {
-            console.log(`server up in: localhost:${this.app.get('port')}`);
+            console.log('server up');
         });
     }
 }

@@ -11,13 +11,13 @@ class ReviewController {
         }
 
         try {
-            const movieObjecid = formatToObjectId.fromOneString(movie);
-            const platformOBjectId = formatToObjectId.fromOneString(platform);
-            const newReview = new ReviewModel({ movie: movieObjecid, platform: platformOBjectId, author, body, score });
-            newReview.save(err => { if (err) return false; });
+            const movieObjectId = formatToObjectId.fromString(movie);
+            const platformObjectId = formatToObjectId.fromString(platform);
+            const newReview = new ReviewModel({ movie: movieObjectId, platform: platformObjectId, author, body, score });
+            newReview.save();
             return res.status(201).send({ status: 'success', newReview });
         } catch (error) {
-            return res.status(500).send({ error });
+            return res.status(500).send({ status: 'error', message: 'sorry something went wrong please try again later', error });
         }
     }
 

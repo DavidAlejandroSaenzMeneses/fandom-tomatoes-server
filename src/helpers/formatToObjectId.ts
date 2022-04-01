@@ -13,7 +13,7 @@ class FormatToObjectId {
         }
     }
 
-    public fromOneString(idString: string | undefined | null) {
+    public fromString(idString: string | undefined | null) {
         //recibe un string de id y devuelve un ObjectId
         if (idString == undefined && idString == null) { return null; }
         return new mongoose.Types.ObjectId(idString);

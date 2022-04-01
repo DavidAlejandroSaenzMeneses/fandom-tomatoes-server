@@ -1,11 +1,3 @@
-/* Plataforma - Netflix, HBO, Prime Video, etcétera.
-{
-    id <UID>, // ID de la plataforma.
-  icon <url>, // Icono de la plataforma. Ejemplo: netflix-icon.jpg
-  title <String>, // Nombre de la plataforma. Ejemplo: Netflix
-    createdAt <Datetime>, // Fecha de creación de la plataforma.
-  updatedAt <Datetime>, // Fecha de última actualización de la plataforma.
-}*/
 import mongoose,{ObjectId} from 'mongoose';
 
 export interface IPlatform extends mongoose.Document {

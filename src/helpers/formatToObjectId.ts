@@ -3,10 +3,10 @@ import mongoose from 'mongoose';
 class FormatToObjectId {
     public fromArray(stringOfArrayOfId: string | undefined | null) {
         //recibe un arreglo y transforma cara elemento a un objectId
-        if (stringOfArrayOfId == undefined || stringOfArrayOfId == null) { return null; }
+        if (stringOfArrayOfId === undefined || stringOfArrayOfId === null) { return null; }
         try {
             //Valida si es un string para transformarlo a un objeto iterable (pensado para el manejo de from-data, el cual enviar arreglos como strings)
-            const baseArray: string[] = typeof stringOfArrayOfId == 'string' ? JSON.parse(stringOfArrayOfId) : stringOfArrayOfId;
+            const baseArray: string[] = typeof stringOfArrayOfId === 'string' ? JSON.parse(stringOfArrayOfId) : stringOfArrayOfId;
             return baseArray.map(id => new mongoose.Types.ObjectId(id));
         } catch {
             return [];
@@ -15,7 +15,7 @@ class FormatToObjectId {
 
     public fromString(idString: string | undefined | null) {
         //recibe un string de id y devuelve un ObjectId
-        if (idString == undefined && idString == null) { return null; }
+        if (idString === undefined || idString === null) { return null; }
         return new mongoose.Types.ObjectId(idString);
     }
 }

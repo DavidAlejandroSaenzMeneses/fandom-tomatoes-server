@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 
 export const resizeImage = async (filePath: string | undefined, fileName: string | undefined, width = 300, height:number|null = null) => {
-    if (filePath == undefined || fileName == undefined) {
+    if (filePath === undefined || fileName === undefined) {
         return null;
     }
     const finalFileName = `resize-${fileName}`;

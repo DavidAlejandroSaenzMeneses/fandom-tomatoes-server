@@ -37,7 +37,7 @@ const ReviewSchema = new mongoose.Schema<IReview>(
             type: Number,
             required: true,
             min: 0,
-            max: 100
+            max: 5
         }
 
     },

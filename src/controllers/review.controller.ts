@@ -6,7 +6,7 @@ import { formatToObjectId } from '../helpers/formatToObjectId';
 class ReviewController {
     public async create(req: Request, res: Response) {
         const { movie, platform, author, body, score } = req.body;
-        if (movie == '' || platform == '' || author == '' || body == '' || !(score >= 0)) {
+        if (movie === '' || platform === '' || author === '' || body === '' || !(score >= 0)) {
             return res.status(400).send({ status: 'success', message: 'incomplete data' });
         }
 
@@ -30,10 +30,10 @@ class ReviewController {
         const reviewsOrderByPlatform: IListReview[] = [];
         reviews.map((review) => {
             //valida si la plataforma ya fue cargada al arreglo de reviews ordenado
-            const platformAlreadyOrdered = reviewsOrderByPlatform.filter(data => data.platform == review.platform.title);
-            if (!platformAlreadyOrdered || platformAlreadyOrdered.length == 0) {
+            const platformAlreadyOrdered = reviewsOrderByPlatform.filter(data => data.platform === review.platform.title);
+            if (!platformAlreadyOrdered || platformAlreadyOrdered.length === 0) {
                 //filtra las reseñas por plataforma
-                const dataFilterByPlatform = reviews.filter(data => data.platform == review.platform);
+                const dataFilterByPlatform = reviews.filter(data => data.platform === review.platform);
                 //carga al arreglo un objeto con la plataforma y el array de reseñas filtradas
                 if (review.platform.title) {
                     reviewsOrderByPlatform.push({
@@ -48,7 +48,7 @@ class ReviewController {
 
     public async getOverallScoreMovie(movie: ObjectId | string): Promise<number> {
         const reviews = await ReviewModel.find({ movie });
-        if (!reviews || reviews.length == 0) { return 0; }
+        if (!reviews || reviews.length === 0) { return 0; }
         try {
             return reviews.map(review => review.score).reduce((overwallScore, score) => overwallScore += score) / reviews.length;
         } catch {

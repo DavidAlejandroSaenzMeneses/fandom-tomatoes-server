@@ -35,9 +35,6 @@ const MovieSchema = new mongoose.Schema<IMovie>(
             type: String,
             required: true
         },
-        /*platforms: {
-            type: Array
-        },*/
         platforms: [
             {
                 type: mongoose.Schema.Types.ObjectId,
